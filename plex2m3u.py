@@ -5,18 +5,13 @@ This script connects to a Plex Media Server and allows users to export audio pla
 to M3U files. The playlists can be customized to include album and artist information 
 and are moved to a specified target directory. Non-ASCII characters can be converted 
 to ASCII if desired.
-
 Original Code Attribution:
 This script is based on the original work by evolve700, which is available at:
 https://github.com/evolve700/PlexPlaylistExport/tree/main
 The original code is licensed under the GPL-3.0 license.
-
 Enhancements and modifications have been made to simplify usage, support file replacement, 
 and improve compatibility for specific setups.
 """
-
-
-
 
 import os
 import argparse
@@ -29,10 +24,6 @@ from config import (
     WRITE_ALBUM, WRITE_ALBUM_ARTIST, TARGET_DIR
 )
 
-# Rest of your script remains unchanged
- 
-
-
 def do_asciify(input_string):
     """Converts a string to its ASCII representation."""
     if input_string is None:
@@ -43,29 +34,29 @@ def do_asciify(input_string):
     return unidecode(replaced)
 
 def list_playlists():
-    """List all audio playlists available on the Plex server."""
+    """Retrieve all audio playlists available on the Plex server."""
     try:
         print("Connecting to Plex...", end="")
         plex = PlexServer(HOST, TOKEN)
         print(" done.")
-        playlists = plex.playlists()
-        print("\nAvailable Playlists:")
-        audio_playlists = [p.title for p in playlists if p.playlistType == "audio"]
-        for idx, title in enumerate(audio_playlists, start=1):
-            print(f"{idx}. {title}")
-        return audio_playlists
+        playlists = [p.title for p in plex.playlists() if p.playlistType == "audio"]
+        return playlists
     except Exception as e:
         print(f"Failed to connect or retrieve playlists. Error: {e}")
         return []
 
+
 def export_playlist(playlist_name):
-    """Export a selected playlist as an M3U file."""
+    """Export a selected playlist as an M3U file and display song count."""
     try:
         print(f"Connecting to Plex to export '{playlist_name}'...", end="")
         plex = PlexServer(HOST, TOKEN)
         playlist = plex.playlist(playlist_name)
         print(" done.")
-        
+
+        song_count = len(playlist.items())
+        print(f"Playlist '{playlist_name}' contains {song_count} songs.")
+
         playlist_title = do_asciify(playlist.title) if ASCIIFY else playlist.title
         extension = "m3u"
         encoding = "ascii" if ASCIIFY else "utf-8"
@@ -97,36 +88,41 @@ def export_playlist(playlist_name):
     except Exception as e:
         print(f"Failed to export playlist. Error: {e}")
 
-
 def export_all_playlists():
-    """Export all audio playlists as M3U files."""
+    """Export all audio playlists as M3U files, excluding 'All Music'."""
     try:
         print("Connecting to Plex to export all playlists...", end="")
         plex = PlexServer(HOST, TOKEN)
         print(" done.")
         
-        playlists = [p for p in plex.playlists() if p.playlistType == "audio"]
+        # Filter playlists and exclude "All Music"
+        playlists = [p for p in plex.playlists() if p.playlistType == "audio" and p.title != "All Music"]
         if not playlists:
-            print("No audio playlists found.")
+            print("No audio playlists found (excluding 'All Music').")
             return
 
         for playlist in playlists:
             print(f"Exporting playlist: {playlist.title}")
             export_playlist(playlist.title)
-        print("All playlists have been exported.")
+        print("All playlists (excluding 'All Music') have been exported.")
     except Exception as e:
         print(f"Failed to export all playlists. Error: {e}")
+
 
 def main():
     playlists = list_playlists()
     if not playlists:
         return
+
+    print("\nAvailable Playlists:")
+    for idx, title in enumerate(playlists, start=1):
+        print(f"{idx}. {title}")
+
+    print("\nOptions:")
+    print("0. Export all playlists (CAUTION: depending on playlist size and amount, could be very slow)")
+
     while True:
         try:
-            print("\nOptions:")
-            print("0. Export all playlists (CAUTION: depending on playlist size and amount, could be very slow)")
-            for idx, title in enumerate(playlists, start=1):
-                print(f"{idx}. {title}")
             choice = input("\nEnter the number of the playlist to export (or type 'exit' to exit): ")
             if choice.lower() == "exit":
                 print("Exiting...")
@@ -137,10 +133,13 @@ def main():
             if not choice.isdigit() or int(choice) < 1 or int(choice) > len(playlists):
                 print("Invalid choice. Please enter a valid number.")
                 continue
+
             selected_playlist = playlists[int(choice) - 1]
             export_playlist(selected_playlist)
         except KeyboardInterrupt:
             print("\nExiting...")
             break
+
+
 if __name__ == "__main__":
     main()
