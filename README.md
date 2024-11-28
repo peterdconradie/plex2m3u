@@ -24,7 +24,7 @@ Clone this repository:
    cd Plex2M3U 
    ```
 ## Screenshot
-![Screenshot of terminal](screenshot.png)
+![Screenshot of terminal](terminal.png)
 
 
 ## Configuration
@@ -49,10 +49,15 @@ TARGET_DIR = "/drive/plex/music/"  # Destination directory for the exported play
 
 ## Usage
 
-Run the script with:
+Navigate to the plex2m3u folder in your terminal and run the script with:
 ```bash
 python3 plex2m3u.py
 ```
+Or write 
+```bash
+python3
+```
+in the terminal and drag the plex2m3u.py file into the terminal to find the exact location and subsequebtly run the file. 
 
 Follow the prompts to select and export playlists. Exported `.m3u` files will be moved to the specified target directory.
 
