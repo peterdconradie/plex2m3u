@@ -1,9 +1,12 @@
-# config.py
-HOST = "http://192.168.xxx.xxx:32400"  # URL of your Plex Media Server, replace with your own address
-TOKEN = "xxxxxxxxxxxxxxxxxxxx"  # Plex token for authentication.
-PLEX_MUSIC_ROOT = '/plex/media/'  # Base directory for music files on the Plex server but excludes the music folder (see TARGET_DIR below)
-REPLACE_WITH_DIR = '../'  # Path prefix to replace PLEX_MUSIC_ROOT.
-ASCIIFY = False  # Convert non-ASCII characters to ASCII.
-WRITE_ALBUM = True  # Include album information in the playlist file.
-WRITE_ALBUM_ARTIST = True  # Include album artist information.
-TARGET_DIR = "/plex/media/music/"  # Destination for exported playlists.
+# Configuration
+HOST = "http://<your-plex-server-address>:32400"  # URL of your Plex Media Server.
+TOKEN = "<your-plex-token>"  # Plex token for authentication (replace with your actual token).
+# Learn how to find your token here: https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/
+PLEX_MUSIC_ROOT = '/Volumes/media/'  # Base directory for music files on the Plex server.
+# Note: This should exclude the specific music folder (e.g., use '/drive/plex' instead of '/drive/plex/music').
+REPLACE_WITH_DIR = '../'  # Path prefix to replace PLEX_MUSIC_ROOT in the exported playlist.
+# Keep it as '../' if your playlists will be stored in the root folder of your music directory (as is the case for the TARGET_DIR).
+ASCIIFY = False  # Set to True to convert non-ASCII characters to ASCII (e.g., ä -> ae).
+WRITE_ALBUM = True  # If True, include album information in the playlist file.
+WRITE_ALBUM_ARTIST = True  # If True, include album artist information in the playlist file.
+TARGET_DIR = "/drive/plex/music/"  # Destination directory for the exported playlists.
