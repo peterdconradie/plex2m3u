@@ -47,20 +47,18 @@ def list_playlists():
 
 
 def export_playlist(playlist_name):
-    """Export a selected playlist as an M3U file and display song count."""
+    """Export a selected playlist as an M3U file."""
     try:
-        print(f"Connecting to Plex to export '{playlist_name}'...", end="")
+        print(f"Exporting playlist: '{playlist_name}'...", end=" ")
         plex = PlexServer(HOST, TOKEN)
         playlist = plex.playlist(playlist_name)
-        print(" done.")
-
+        
         song_count = len(playlist.items())
-        print(f"Playlist '{playlist_name}' contains {song_count} songs.")
-
         playlist_title = do_asciify(playlist.title) if ASCIIFY else playlist.title
         extension = "m3u"
         encoding = "ascii" if ASCIIFY else "utf-8"
         file_path = f"{playlist_title}.{extension}"
+        
         with open(file_path, 'w', encoding=encoding) as m3u:
             m3u.write("#EXTM3U\n")
             m3u.write(f"#PLAYLIST:{playlist_title}\n\n")
@@ -76,37 +74,37 @@ def export_playlist(playlist_name):
                 for part in item.media[0].parts:
                     m3u.write(f"#EXTINF:{seconds},{artist} - {title}\n")
                     m3u.write(f"{part.file.replace(PLEX_MUSIC_ROOT, REPLACE_WITH_DIR)}\n\n")
-        print(f"Playlist '{playlist_title}' exported to {file_path}.")
-
-        # Move the file to the target directory, replacing if it exists
+        
         destination = os.path.join(TARGET_DIR, file_path)
         if os.path.exists(destination):
             os.remove(destination)  # Remove the existing file
         shutil.move(file_path, TARGET_DIR)
-        print(f"Moved {file_path} to {TARGET_DIR} (existing file replaced).")
+
+        print(f"done. {song_count} songs exported and moved to '{TARGET_DIR}'.")
 
     except Exception as e:
-        print(f"Failed to export playlist. Error: {e}")
+        print(f"Failed to export playlist '{playlist_name}'. Error: {e}")
+
 
 def export_all_playlists():
     """Export all audio playlists as M3U files, excluding 'All Music'."""
     try:
-        print("Connecting to Plex to export all playlists...", end="")
+        print("\nExporting all playlists...", end=" ")
         plex = PlexServer(HOST, TOKEN)
-        print(" done.")
-        
-        # Filter playlists and exclude "All Music"
+
         playlists = [p for p in plex.playlists() if p.playlistType == "audio" and p.title != "All Music"]
         if not playlists:
-            print("No audio playlists found (excluding 'All Music').")
+            print("No audio playlists found.")
             return
 
         for playlist in playlists:
-            print(f"Exporting playlist: {playlist.title}")
             export_playlist(playlist.title)
-        print("All playlists (excluding 'All Music') have been exported.")
+
+        print("All playlists (excluding 'All Music') exported.")
+
     except Exception as e:
         print(f"Failed to export all playlists. Error: {e}")
+
 
 
 def main():
