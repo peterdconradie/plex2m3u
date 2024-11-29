@@ -1,18 +1,14 @@
 """
 Plex Playlist Export Script
-
 This script connects to a Plex Media Server and allows users to export audio playlists
 to M3U files. The playlists can be customized to include album and artist information 
 and are moved to a specified target directory. Non-ASCII characters can be converted 
 to ASCII if desired.
-Original Code Attribution:
 This script is based on the original work by evolve700, which is available at:
 https://github.com/evolve700/PlexPlaylistExport/tree/main
 The original code is licensed under the GPL-3.0 license.
-Enhancements and modifications have been made to simplify usage, support file replacement, 
-and improve compatibility for specific setups.
-"""
 
+"""
 import os
 import argparse
 import shutil
@@ -24,15 +20,14 @@ from config import (
     WRITE_ALBUM, WRITE_ALBUM_ARTIST, TARGET_DIR
 )
 
+from unidecode import unidecode
+
 def do_asciify(input_string):
     """Converts a string to its ASCII representation."""
     if input_string is None:
         return None
-    replaced = input_string.replace('Ä', 'Ae').replace('ä', 'ae')
-    replaced = replaced.replace('Ö', 'Oe').replace('ö', 'oe')
-    replaced = replaced.replace('Ü', 'Ue').replace('ü', 'ue')
-    return unidecode(replaced)
-
+    return unidecode(input_string)
+    
 def list_playlists():
     """Retrieve all audio playlists available on the Plex server."""
     try:
@@ -44,7 +39,6 @@ def list_playlists():
     except Exception as e:
         print(f"Failed to connect or retrieve playlists. Error: {e}")
         return []
-
 
 def export_playlist(playlist_name):
     """Export a selected playlist as an M3U file."""
@@ -85,7 +79,6 @@ def export_playlist(playlist_name):
     except Exception as e:
         print(f"Failed to export playlist '{playlist_name}'. Error: {e}")
 
-
 def export_all_playlists():
     """Export all audio playlists as M3U files, excluding 'All Music'."""
     try:
@@ -105,8 +98,6 @@ def export_all_playlists():
     except Exception as e:
         print(f"Failed to export all playlists. Error: {e}")
 
-
-
 def main():
     playlists = list_playlists()
     if not playlists:
@@ -121,8 +112,8 @@ def main():
 
     while True:
         try:
-            choice = input("\nEnter the number of the playlist to export (or type 'exit' to exit): ")
-            if choice.lower() == "exit":
+            choice = input("\nEnter the number of the playlist to export (or type 'x' to exit): ")
+            if choice.lower() == "x":
                 print("Exiting...")
                 break
             if choice == "0":
@@ -137,7 +128,5 @@ def main():
         except KeyboardInterrupt:
             print("\nExiting...")
             break
-
-
 if __name__ == "__main__":
     main()
