@@ -24,7 +24,7 @@ Clone this repository:
    cd Plex2M3U 
    ```
 ## Screenshot
-![Screenshot of terminal](terminal.png)
+![Screenshot of terminal](terminal_screenshot)
 
 
 ## Configuration
